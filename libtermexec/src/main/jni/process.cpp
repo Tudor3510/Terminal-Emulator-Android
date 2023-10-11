@@ -26,8 +26,8 @@
 #include <unistd.h>
 #include <termios.h>
 #include <signal.h>
+#include <string.h>
 
-typedef unsigned short char16_t;
 
 class String8 {
 public:
@@ -201,7 +201,7 @@ JNIEXPORT jint JNICALL Java_jackpal_androidterm_TermExec_createSubprocessInterna
     const jchar* str = cmd ? env->GetStringCritical(cmd, 0) : 0;
     String8 cmd_8;
     if (str) {
-        cmd_8.set(str, env->GetStringLength(cmd));
+        cmd_8.set((const char16_t*)str, env->GetStringLength(cmd));
         env->ReleaseStringCritical(cmd, str);
     }
 
@@ -221,7 +221,7 @@ JNIEXPORT jint JNICALL Java_jackpal_androidterm_TermExec_createSubprocessInterna
                 throwOutOfMemoryError(env, "Couldn't get argument from array");
                 return 0;
             }
-            tmp_8.set(str, env->GetStringLength(arg));
+            tmp_8.set((const char16_t*)str, env->GetStringLength(arg));
             env->ReleaseStringCritical(arg, str);
             argv[i] = strdup(tmp_8.string());
         }
@@ -243,7 +243,7 @@ JNIEXPORT jint JNICALL Java_jackpal_androidterm_TermExec_createSubprocessInterna
                 throwOutOfMemoryError(env, "Couldn't get env var from array");
                 return 0;
             }
-            tmp_8.set(str, env->GetStringLength(var));
+            tmp_8.set((const char16_t*)str, env->GetStringLength(var));
             env->ReleaseStringCritical(var, str);
             envp[i] = strdup(tmp_8.string());
         }

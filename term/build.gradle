@@ -32,4 +32,5 @@ android {
 dependencies {
     compile project(':emulatorview')
     compile project(':libtermexec')
+    compile 'com.android.support:support-compat:25.3.1' // Use the appropriate version
 }

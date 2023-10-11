@@ -26,6 +26,8 @@ import android.net.Uri;
 import android.os.*;
 import android.content.Intent;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.app.Notification;
@@ -94,13 +96,26 @@ public class TermService extends Service implements TermSession.FinishCallback
         mTermSessions = new SessionList();
 
         /* Put the service in the foreground. */
-        Notification notification = new Notification(R.drawable.ic_stat_service_notification_icon, getText(R.string.service_notify_text), System.currentTimeMillis());
-        notification.flags |= Notification.FLAG_ONGOING_EVENT;
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_stat_service_notification_icon)
+                .setContentTitle(getText(R.string.application_terminal))
+                .setContentText(getText(R.string.service_notify_text))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setOngoing(true);
+
         Intent notifyIntent = new Intent(this, Term.class);
         notifyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notifyIntent, 0);
-        notification.setLatestEventInfo(this, getText(R.string.application_terminal), getText(R.string.service_notify_text), pendingIntent);
+        builder.setContentIntent(pendingIntent);
+
+        Notification notification = builder.build();
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify(RUNNING_NOTIFICATION, notification);
+
         compat.startForeground(RUNNING_NOTIFICATION, notification);
+
+
 
         Log.d(TermDebug.LOG_TAG, "TermService started");
         return;
